@@ -1,0 +1,260 @@
+{
+  "name": "json-flex",
+  "displayName": "JSON Flex",
+  "description": "Prettify / uglify JSON and JSONC, plus a fast, editable, Firefox-style tree view for huge documents.",
+  "version": "0.1.0",
+  "publisher": "runxel",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "repository": "https://github.com/runxel/vsc-json-flex",
+  "categories": [
+    "Formatters",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "json",
+    "jsonc",
+    "viewer",
+    "tree",
+    "minify",
+    "prettify"
+  ],
+  "main": "./extension.js",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:ui": "node test/harness.js --selftest",
+    "test:vscode": "node test/vscode-run.js",
+    "bench": "node test/bench.js"
+  },
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "jsonFlex.view",
+        "displayName": "JSON Flex Tree",
+        "selector": [
+          {
+            "filenamePattern": "*.json"
+          },
+          {
+            "filenamePattern": "*.jsonc"
+          },
+          {
+            "filenamePattern": "*.geojson"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "commands": [
+      {
+        "command": "jsonFlex.prettify",
+        "title": "Prettify",
+        "category": "JSON Flex",
+        "icon": "$(list-flat)"
+      },
+      {
+        "command": "jsonFlex.uglify",
+        "title": "Uglify (Minify)",
+        "category": "JSON Flex",
+        "icon": "$(fold)"
+      },
+      {
+        "command": "jsonFlex.toggleView",
+        "title": "Toggle Tree / Text View",
+        "category": "JSON Flex"
+      },
+      {
+        "command": "jsonFlex.openTreeView",
+        "title": "Open Tree View",
+        "category": "JSON Flex",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "jsonFlex.openTextView",
+        "title": "Open Text View",
+        "category": "JSON Flex",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "jsonFlex.node.editValue",
+        "title": "Edit Value"
+      },
+      {
+        "command": "jsonFlex.node.editKey",
+        "title": "Rename Key"
+      },
+      {
+        "command": "jsonFlex.node.addAfter",
+        "title": "Add Entry After"
+      },
+      {
+        "command": "jsonFlex.node.addChild",
+        "title": "Add Child"
+      },
+      {
+        "command": "jsonFlex.node.delete",
+        "title": "Delete"
+      },
+      {
+        "command": "jsonFlex.node.copyValue",
+        "title": "Copy Value"
+      },
+      {
+        "command": "jsonFlex.node.copyPath",
+        "title": "Copy Path"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "jsonFlex.openTreeView",
+          "when": "activeEditor == workbench.editors.files.textFileEditor && resourceLangId =~ /^jsonc?$/",
+          "group": "navigation"
+        },
+        {
+          "command": "jsonFlex.openTextView",
+          "when": "activeCustomEditorId == jsonFlex.view",
+          "group": "navigation"
+        },
+        {
+          "command": "jsonFlex.prettify",
+          "when": "resourceLangId =~ /^jsonc?$/ || activeCustomEditorId == jsonFlex.view",
+          "group": "1_jsonFlex@1"
+        },
+        {
+          "command": "jsonFlex.uglify",
+          "when": "resourceLangId =~ /^jsonc?$/ || activeCustomEditorId == jsonFlex.view",
+          "group": "1_jsonFlex@2"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "jsonFlex.prettify",
+          "when": "resourceLangId =~ /^jsonc?$/",
+          "group": "1_modification@90"
+        },
+        {
+          "command": "jsonFlex.uglify",
+          "when": "resourceLangId =~ /^jsonc?$/",
+          "group": "1_modification@91"
+        }
+      ],
+      "webview/context": [
+        {
+          "command": "jsonFlex.node.editValue",
+          "when": "webviewId == 'jsonFlex.view' && jsonKind == 'value'",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "jsonFlex.node.editKey",
+          "when": "webviewId == 'jsonFlex.view' && jsonHasKey",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "jsonFlex.node.addAfter",
+          "when": "webviewId == 'jsonFlex.view' && !jsonIsRoot",
+          "group": "2_struct@1"
+        },
+        {
+          "command": "jsonFlex.node.addChild",
+          "when": "webviewId == 'jsonFlex.view' && jsonKind == 'container'",
+          "group": "2_struct@2"
+        },
+        {
+          "command": "jsonFlex.node.delete",
+          "when": "webviewId == 'jsonFlex.view' && !jsonIsRoot",
+          "group": "2_struct@3"
+        },
+        {
+          "command": "jsonFlex.node.copyValue",
+          "when": "webviewId == 'jsonFlex.view' && webviewSection == 'jsonNode'",
+          "group": "3_copy@1"
+        },
+        {
+          "command": "jsonFlex.node.copyPath",
+          "when": "webviewId == 'jsonFlex.view' && webviewSection == 'jsonNode'",
+          "group": "3_copy@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "jsonFlex.openTreeView",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.openTextView",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.editValue",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.editKey",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.addAfter",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.addChild",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.delete",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.copyValue",
+          "when": "false"
+        },
+        {
+          "command": "jsonFlex.node.copyPath",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "JSON Flex",
+      "properties": {
+        "jsonFlex.prettify.maxInlineWidth": {
+          "type": "number",
+          "default": 80,
+          "minimum": 0,
+          "markdownDescription": "Arrays (and objects, see `#jsonFlex.prettify.inlineObjects#`) that contain only primitives stay on one line when the line fits into this many columns. `0` always expands."
+        },
+        "jsonFlex.prettify.inlineObjects": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Also keep short objects of primitives on one line (e.g. `{ \"x\": 1, \"y\": 2 }`)."
+        },
+        "jsonFlex.prettify.indent": {
+          "type": "string",
+          "enum": [
+            "editor",
+            "tab",
+            "2",
+            "4"
+          ],
+          "enumDescriptions": [
+            "Use the editor's indentation settings for the document",
+            "Always indent with tabs",
+            "Always indent with 2 spaces",
+            "Always indent with 4 spaces"
+          ],
+          "default": "editor",
+          "description": "Indentation used by Prettify."
+        },
+        "jsonFlex.tree.keyColumnWidth": {
+          "type": "number",
+          "default": 260,
+          "minimum": 60,
+          "description": "Initial width (px) of the key column in the tree view. Drag the column divider to change it per view."
+        }
+      }
+    }
+  }
+}

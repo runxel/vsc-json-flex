@@ -1,0 +1,11 @@
+# Excluded from the packaged .vsix (vsce package). The extension needs only:
+# extension.js, src/, lib/, media/, package.json, README.md, LICENSE.md
+dist/**
+.vscode/**
+.vscodeignore
+.gitignore
+.editorconfig
+*.code-workspace
+test/**
+CLAUDE.md
+*.vsix
